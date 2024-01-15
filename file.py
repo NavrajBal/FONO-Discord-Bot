@@ -17,19 +17,18 @@ class settings:
 
 userPrefs = {}
 
+# connection test
 @client.event
 async def on_ready():
     print("IT WORKED!")
 
+# ping pong check
 @client.command()
 async def ping(ctx):
     await ctx.author.send("Pong!")
 
-@client.command()
-async def count(ctx):
-    await ctx.channel.send(ctx.channel)
 
-
+# init user preferences
 @client.command()
 async def init(ctx):
     id = ctx.author.id
@@ -40,6 +39,7 @@ async def init(ctx):
     else:
         await ctx.channel.send("you are already setup")
 
+# add followers
 @client.command()
 async def add(ctx):
     id = ctx.author.id
@@ -49,13 +49,13 @@ async def add(ctx):
     else:
         mentionsList = ctx.message.mentions
         for i in mentionsList:
-            userPrefs[id].following.append(i.id)
+            userPrefs[id].following.append(i)
             userPrefs[id].followingSize += 1
             
         userPrefs[id].isFollowing = True if userPrefs[id].followingSize >= 1 else False
         await ctx.channel.send(userPrefs[id].following)
 
-
+# remove followers
 @client.command()
 async def remove(ctx):
     id = ctx.author.id
@@ -67,13 +67,13 @@ async def remove(ctx):
     else:
         mentionsList = ctx.message.mentions
         for i in mentionsList:
-            userPrefs[id].following.remove(i.id)
+            userPrefs[id].following.remove(i)
             userPrefs[id].followingSize -= 1
         
         userPrefs[id].isFollowing = True if len(userPrefs[id].following) >= 1 else False
         await ctx.channel.send(userPrefs[id].following)
 
-
+# output vc with participants
 @client.command()
 async def channels(ctx):
     dServer = ctx.guild
@@ -93,6 +93,15 @@ async def channels(ctx):
                 await ctx.channel.send(memb)
 
     await ctx.channel.send(vcDict)
+
+
+# dm if a follower joined vc
+@client.event
+async def on_voice_state_update(member, before, after):
+    for user in userPrefs:
+        if member in userPrefs[user].following:
+            if before.channel is None and after.channel is not None:
+                await member.send(member.name + " is in a vc.")
 
 
 
