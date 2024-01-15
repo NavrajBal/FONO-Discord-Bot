@@ -22,11 +22,6 @@ userPrefs = {}
 async def on_ready():
     print("IT WORKED!")
 
-# ping pong check
-@client.command()
-async def ping(ctx):
-    await ctx.author.send("Pong!")
-
 
 # init user preferences
 @client.command()
@@ -94,6 +89,12 @@ async def channels(ctx):
 
     await ctx.channel.send(vcDict)
 
+# output all following
+@client.command()
+async def following(ctx):
+    id = ctx.author.id
+    for i in userPrefs[id].following:
+        await ctx.channel.send(userPrefs[id].following)
 
 # dm if a follower joined vc
 @client.event
@@ -102,7 +103,6 @@ async def on_voice_state_update(member, before, after):
         if member in userPrefs[user].following:
             if before.channel is None and after.channel is not None:
                 await member.send(member.name + " is in a vc.")
-
 
 
 client.run(discordToken)
