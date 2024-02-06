@@ -13,6 +13,7 @@ class settings:
         self.followingSize = 0
         self.following = []
         self.delay = 10
+        self.conditionMet = False
 
 
 userPrefs = {}
@@ -102,7 +103,9 @@ async def on_voice_state_update(member, before, after):
     for user in userPrefs:
         if member in userPrefs[user].following:
             if before.channel is None and after.channel is not None:
+                userPrefs[user].conditionMet = True
                 await member.send(member.name + " is in a vc.")
 
 
 client.run(discordToken)
+
